@@ -8,6 +8,7 @@ import org.codemonkey.simplejavamail.Mailer;
 import org.junit.Test;
 
 import javax.mail.Message;
+import java.util.List;
 
 import static com.jayway.restassured.RestAssured.when;
 
@@ -71,5 +72,10 @@ public class CanSendEmailTest {
         String mailboxesXML =  xmlResponse.body().asString();
 
         System.out.println(mailboxesXML);
+
+        // parse out mailboxes into a list
+        XmlPath mailboxes = new XmlPath(mailboxesXML);
+        List<String> mailboxList = mailboxes.getList("session.mailbox.address");
+        System.out.println(mailboxList.size());
     }
 }
