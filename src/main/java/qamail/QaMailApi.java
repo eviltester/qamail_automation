@@ -11,8 +11,6 @@ import static com.jayway.restassured.RestAssured.when;
 
 public class QaMailApi {
 
-    // TODO: Store last response
-
     private final String qamail_host;
     private final String baseEndPoint;
     private Response lastResponse;
