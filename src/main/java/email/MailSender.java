@@ -12,7 +12,6 @@ public class MailSender {
     private String mail_password;
     private String mail_host;
     private String mail_port;
-    private String qamail_host;
     private Mailer mailer;
 
     public static MailSender getInstance() {
