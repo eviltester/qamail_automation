@@ -66,10 +66,12 @@ public class CanSendEmailTest {
 
 
         // list mailboxes
-        endpoint = baseendpoint + "/list_mailboxes" + "?session_key=" + sessionKey;
+        String sessionKeyParam = "?session_key=" + sessionKey;
 
-        Response listXmlResponse = when().get(endpoint).then().contentType(ContentType.XML).extract().response();
-        String mailboxesXML =  xmlResponse.body().asString();
+        String listMailboxEndpoint = baseendpoint + "/list_mailboxes" + sessionKeyParam;
+
+        Response listXmlResponse = when().get(listMailboxEndpoint).then().contentType(ContentType.XML).extract().response();
+        String mailboxesXML =  listXmlResponse.body().asString();
 
         System.out.println(mailboxesXML);
 
@@ -77,5 +79,21 @@ public class CanSendEmailTest {
         XmlPath mailboxes = new XmlPath(mailboxesXML);
         List<String> mailboxList = mailboxes.getList("session.mailbox.address");
         System.out.println(mailboxList.size());
+
+        // create a new mailbox for the session
+        String createMailBoxEndPoint = baseendpoint + "/create_mailbox" + sessionKeyParam;
+        Response createMailBoxResponse = when().get(createMailBoxEndPoint).then().contentType(ContentType.XML).extract().response();
+        String createMailBoxXML =  createMailBoxResponse.body().asString();
+
+        System.out.println(createMailBoxXML);
+
+
+        // Check mailbox has a new email in the list
+        listXmlResponse = when().get(listMailboxEndpoint).then().contentType(ContentType.XML).extract().response();
+        mailboxesXML =  listXmlResponse.body().asString();
+
+        System.out.println(mailboxesXML);
+
+
     }
 }
