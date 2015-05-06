@@ -5,6 +5,7 @@ import com.jayway.restassured.path.xml.XmlPath;
 import com.jayway.restassured.response.Response;
 import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.Mailer;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.mail.Message;
@@ -20,6 +21,8 @@ public class CanSendEmailTest {
     public void canSendEmail(){
 
         // https://github.com/bbottema/simple-java-mail/wiki/Manual
+
+        MailSender emailer = MailSender.getInstance();
 
         String mail_username= System.getenv("JAVAMAIL_USERNAME");
         String mail_password= System.getenv("JAVAMAIL_PASSWORD");
@@ -51,6 +54,7 @@ public class CanSendEmailTest {
         // create a session
         String endpoint = baseendpoint + "/create_session";
 
+        System.out.println(endpoint);
         Response xmlResponse = when().get(endpoint).then().contentType(ContentType.XML).extract().response();
 
         String xml =  xmlResponse.body().asString();
@@ -70,6 +74,7 @@ public class CanSendEmailTest {
 
         String listMailboxEndpoint = baseendpoint + "/list_mailboxes" + sessionKeyParam;
 
+        System.out.println(listMailboxEndpoint);
         Response listXmlResponse = when().get(listMailboxEndpoint).then().contentType(ContentType.XML).extract().response();
         String mailboxesXML =  listXmlResponse.body().asString();
 
@@ -78,10 +83,12 @@ public class CanSendEmailTest {
         // parse out mailboxes into a list
         XmlPath mailboxes = new XmlPath(mailboxesXML);
         List<String> mailboxList = mailboxes.getList("session.mailbox.address");
-        System.out.println(mailboxList.size());
+        int initialSize = mailboxList.size();
+        System.out.println(initialSize);
 
         // create a new mailbox for the session
         String createMailBoxEndPoint = baseendpoint + "/create_mailbox" + sessionKeyParam;
+        System.out.println(createMailBoxEndPoint);
         Response createMailBoxResponse = when().get(createMailBoxEndPoint).then().contentType(ContentType.XML).extract().response();
         String createMailBoxXML =  createMailBoxResponse.body().asString();
 
@@ -89,11 +96,50 @@ public class CanSendEmailTest {
 
 
         // Check mailbox has a new email in the list
+        System.out.println(listMailboxEndpoint);
         listXmlResponse = when().get(listMailboxEndpoint).then().contentType(ContentType.XML).extract().response();
         mailboxesXML =  listXmlResponse.body().asString();
 
         System.out.println(mailboxesXML);
 
+        mailboxes = new XmlPath(mailboxesXML);
+        mailboxList = mailboxes.getList("session.mailbox.address");
+        int newSize = mailboxList.size();
 
+        Assert.assertTrue("Size should be bigger ", newSize > initialSize);
+
+        //Show mailbox for an email address
+        String showMailBoxEndPoint = baseendpoint + "/show_mailbox_content" + sessionKeyParam + "&address=" + mailboxList.get(0);
+
+        System.out.println(showMailBoxEndPoint);
+
+        Response mailboxXmlResponse = when().get(showMailBoxEndPoint).then().contentType(ContentType.XML).extract().response();
+        String mailboxXML = mailboxXmlResponse.body().asString();
+
+        System.out.println(mailboxXML);
+
+        mailboxes = new XmlPath(mailboxXML);
+        String mailboxAddress = mailboxes.getString("mailbox.address");
+
+        Assert.assertEquals("is wrong email address", mailboxList.get(0), mailboxAddress);
+
+        List<Object> letterList = mailboxes.getList("mailbox.letter");
+
+        Assert.assertEquals("Should not have any email", 0, letterList.size());
+
+        // TODO send an email
+        // TODO get email and check content
+        // Empty Emailbox
+
+        String emptyMailBoxEndPoint = baseendpoint + "/empty_mailbox" + sessionKeyParam + "&address=" + mailboxList.get(0);
+        System.out.println(emptyMailBoxEndPoint);
+        Response emptyMailboxXmlResponse = when().get(emptyMailBoxEndPoint).then().contentType(ContentType.HTML).extract().response();
+        String emptyMailboxXmlResponseXML = emptyMailboxXmlResponse.body().asString();
+
+        System.out.println(emptyMailboxXmlResponseXML);
+        System.out.println(emptyMailboxXmlResponseXML.length());
+        Assert.assertTrue("Should be empty response", 0 == emptyMailboxXmlResponseXML.length());
+
+        //TODO: check mailbox is empty
     }
 }
