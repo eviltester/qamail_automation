@@ -1,6 +1,8 @@
 package email;
 
 import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.path.xml.XmlPath;
+import com.jayway.restassured.response.Response;
 import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.Mailer;
 import org.junit.Test;
@@ -45,10 +47,29 @@ public class CanSendEmailTest {
 
         String baseendpoint = "http://" + qamail_host + "/api";
 
+        // create a session
         String endpoint = baseendpoint + "/create_session";
 
-        when().get(endpoint).then().contentType(ContentType.XML);
+        Response xmlResponse = when().get(endpoint).then().contentType(ContentType.XML).extract().response();
+
+        String xml =  xmlResponse.body().asString();
+
+        XmlPath sessionDetails = new XmlPath(xml);
+
+        String sessionKey = sessionDetails.getString("session.session_key");
+        String emailAddress = sessionDetails.getString("session.mailbox.address");
+
+        System.out.println("QA MAIL SESSION KEY: " + sessionKey);
+
+        System.out.println("QA MAIL EMAIL ADDRESS: " + emailAddress);
 
 
+        // list mailboxes
+        endpoint = baseendpoint + "/list_mailboxes" + "?session_key=" + sessionKey;
+
+        Response listXmlResponse = when().get(endpoint).then().contentType(ContentType.XML).extract().response();
+        String mailboxesXML =  xmlResponse.body().asString();
+
+        System.out.println(mailboxesXML);
     }
 }
