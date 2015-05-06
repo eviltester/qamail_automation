@@ -1,12 +1,17 @@
 package email;
 
+import com.jayway.restassured.http.ContentType;
 import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.Mailer;
 import org.junit.Test;
 
 import javax.mail.Message;
 
+import static com.jayway.restassured.RestAssured.when;
+
 public class CanSendEmailTest {
+
+    // This test code is to help me get started and make sure the basic libraries work as required
 
     @Test
     public void canSendEmail(){
@@ -28,7 +33,22 @@ public class CanSendEmailTest {
         email.setTextHTML("<img src='cid:wink1'><b>email text</b><img src='cid:wink2'>");
 
 
-
         new Mailer(mail_host, Integer.decode(mail_port), mail_username, mail_password).sendMail(email);
+    }
+
+    @Test
+    public void canWorkWithAPI(){
+
+        // https://bitbucket.org/naushniki/qamail
+
+        String qamail_host= System.getenv("QAMAIL_HOST");
+
+        String baseendpoint = "http://" + qamail_host + "/api";
+
+        String endpoint = baseendpoint + "/create_session";
+
+        when().get(endpoint).then().contentType(ContentType.XML);
+
+
     }
 }
