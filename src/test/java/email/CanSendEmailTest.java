@@ -71,28 +71,18 @@ public class CanSendEmailTest {
         Assert.assertEquals("is wrong email address", emailToUse, mailboxAddress);
         Assert.assertEquals("Should not have any email", 0, mailbox.size());
 
-        // TODO send an email
+        // send an email
         MailSender emailer = MailSender.getInstance();
         emailer.sendEmailTo(emailToUse, "Bob", "email title", "body of email");
 
-        // TODO get email and check content
+
+        // wait for email to arrive, then get email and check content
         int startEmailCount = mailbox.size();
-        int pollLoop = 10;
-        while(startEmailCount == mailbox.size()){
 
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            System.out.println("polling mailbox " + "(" + pollLoop + ")" + emailToUse);
-
-            mailbox = qaMailApi.showMailBox(qaMailSession.getSessionKey(), emailToUse);
-
-            pollLoop--;
-            if(pollLoop<=0) break;
-        }
+        mailbox = new MailBoxPoller(qaMailApi, qaMailSession.getSessionKey(), emailToUse).
+                setPollWaitTo(500).
+                maxPolls(10).
+                waitUntilMoreThan(mailbox.size());
 
         Assert.assertTrue("Should have received an email", mailbox.size() > startEmailCount);
 
