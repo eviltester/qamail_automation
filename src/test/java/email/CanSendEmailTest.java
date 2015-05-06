@@ -39,14 +39,10 @@ public class CanSendEmailTest {
 
         QaMailApi qaMailApi = new QaMailApi();
 
-        String qamail_host= qaMailApi.getHost();
-        String baseendpoint = qaMailApi.getHostApiUrl();
-
-
+        // start a qa mail session
         QaMailApiSession qaMailSession = qaMailApi.createSession();
 
         // list mailboxes
-        String sessionKeyParam = "?session_key=" + qaMailSession.getSessionKey();
 
         List<String> mailboxList = qaMailApi.listMailBoxes(qaMailSession.getSessionKey());
         int initialSize = mailboxList.size();
@@ -54,15 +50,13 @@ public class CanSendEmailTest {
 
 
         // create a new mailbox for the session
-        String mailBoxEmail = qaMailApi.createMailbox(qaMailSession.getSessionKey());
+        String emailToUse = qaMailApi.createMailbox(qaMailSession.getSessionKey());
 
         // Check mailbox has a new email in the list
         mailboxList = qaMailApi.listMailBoxes(qaMailSession.getSessionKey());
         int newSize = mailboxList.size();
 
         Assert.assertTrue("Size should be bigger ", newSize > initialSize);
-
-        String emailToUse = mailboxList.get(0);
 
         //Show mailbox for an email address
         QaMailBox mailbox = qaMailApi.showMailBox(qaMailSession.getSessionKey(), emailToUse);
