@@ -1,4 +1,4 @@
-package email;
+package qamail;
 
 import qamail.QaMailLetterSummary;
 

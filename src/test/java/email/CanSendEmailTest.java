@@ -3,10 +3,7 @@ package email;
 import org.codemonkey.simplejavamail.Email;
 import org.junit.Assert;
 import org.junit.Test;
-import qamail.QaMailApi;
-import qamail.QaMailApiSession;
-import qamail.QaMailBox;
-import qamail.QaMailLetterSummary;
+import qamail.*;
 
 import javax.mail.Message;
 import java.util.List;

@@ -3,7 +3,6 @@ package qamail;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.xml.XmlPath;
 import com.jayway.restassured.response.Response;
-import email.QaMailLetter;
 
 import java.util.List;
 
