@@ -104,7 +104,10 @@ public class CanSendEmailTest {
         Assert.assertEquals(emailer.getDefaultFromEmailAddress(), letters.get(0).from);
 
 
-        //TODO get the body of the email with  /show_letter call
+        //get the body of the email with  /show_letter call
+        QaMailLetter letter = qaMailApi.showLetter(qaMailSession.getSessionKey(), emailToUse, letters.get(0).id);
+        Assert.assertTrue(letter.content.contains("body of email"));
+
         // https://bitbucket.org/naushniki/qamail
 
         // Empty Emailbox
@@ -115,5 +118,6 @@ public class CanSendEmailTest {
         Assert.assertEquals(0, mailbox.size());
 
         //TODO create session wrapper around the API, so this test is written in terms of the session, rather than the API
+        //TODO find a class library to parse the email content
     }
 }

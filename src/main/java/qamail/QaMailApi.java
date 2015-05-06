@@ -3,6 +3,7 @@ package qamail;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.xml.XmlPath;
 import com.jayway.restassured.response.Response;
+import email.QaMailLetter;
 
 import java.util.List;
 
@@ -133,4 +134,23 @@ public class QaMailApi {
         System.out.println(emptyMailboxXmlResponseXML.length());
     }
 
+    public QaMailLetter showLetter(String sessionKey, String email, String id) {
+        String showLetterEndPoint = baseEndPoint + "/show_letter" + sessionKeyParam(sessionKey) + addressParam(email) + "&letter_id=" + id;
+        System.out.println(showLetterEndPoint);
+        Response xmlResponse = when().get(showLetterEndPoint).then().contentType(ContentType.XML).extract().response();
+        String xmlResponseXML = xmlResponse.body().asString();
+
+        storeLastResponse(xmlResponse);
+
+        XmlPath xmlPath = new XmlPath(xmlResponseXML);
+
+        return new QaMailLetter(
+                xmlPath.getString("letter.id"),
+                xmlPath.getString("letter.subject"),
+                xmlPath.getString("letter.from"),
+                xmlPath.getString("letter.date"),
+                xmlPath.getString("letter.content")
+        );
+
+    }
 }
