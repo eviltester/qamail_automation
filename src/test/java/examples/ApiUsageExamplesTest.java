@@ -36,7 +36,6 @@ public class ApiUsageExamplesTest {
     }
 
 
-
     @Test
     public void canWorkWithRestAPI(){
 
@@ -216,7 +215,7 @@ public class ApiUsageExamplesTest {
 
 
         //get the body of the email with  /show_letter call
-        QaMailLetter letter = qaMailSession.showLetter(emailToUse, letters.get(0).id);
+        QaMailLetter letter = mailbox.showLetter(letters.get(0).id);
         Assert.assertTrue(letter.content.contains("body of email"));
 
         // https://bitbucket.org/naushniki/qamail

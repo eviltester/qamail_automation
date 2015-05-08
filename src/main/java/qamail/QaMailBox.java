@@ -78,4 +78,8 @@ public class QaMailBox {
     public QaMailBox refresh() {
         return qaMailApi.showMailBox(sessionKey, getEmailAddress());
     }
+
+    public QaMailLetter showLetter(String id) {
+        return qaMailApi.showLetter(sessionKey, getEmailAddress(), id);
+    }
 }

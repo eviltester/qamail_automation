@@ -150,4 +150,9 @@ public class QaMailApi {
         );
 
     }
+
+    public QaMailApiSession getSession(String sessionKey) {
+        List<String> mailboxes = listMailBoxes(sessionKey);
+        return new QaMailApiSession(this, sessionKey, mailboxes.get(0));
+    }
 }
