@@ -56,6 +56,8 @@ public class MailSender {
         email.addRecipient(toName, toEmail, Message.RecipientType.TO);
         email.setText(textOfEmail);
 
+        // make the messages visible in std out
+        mailer.setDebug(true);
         mailer.sendMail(email);
     }
 }
