@@ -13,6 +13,14 @@ public class QaMailApiSession {
         this.qaMailApi = qaMailApi;
     }
 
+    public String getDefaultEmailAddress(){
+        return defaultEmailAddress;
+    }
+
+    public QaMailApi getQaMailApi(){
+        return qaMailApi;
+    }
+
     public String getSessionKey() {
         return sessionKey;
     }

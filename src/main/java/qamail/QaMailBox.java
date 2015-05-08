@@ -63,6 +63,14 @@ public class QaMailBox {
                 waitUntilMoreThan(startSize);
     }
 
+    public String getSessionKey(){
+        return sessionKey;
+    }
+
+    public QaMailApi getQaMailApi(){
+        return qaMailApi;
+    }
+
     public void empty() {
         qaMailApi.emptyMailBox(sessionKey, getEmailAddress());
     }
