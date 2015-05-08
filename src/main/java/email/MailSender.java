@@ -60,4 +60,7 @@ public class MailSender {
         mailer.setDebug(true);
         mailer.sendMail(email);
     }
+
+    // TODO: need to support multiple to, cc, bcc
+    // e.g. sendEmailTo(Map<String, String>toEmails, Map<String, String>ccEmails, Map<String, String>bccEmails)
 }
