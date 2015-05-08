@@ -12,6 +12,8 @@ public class CanSendEmailTest {
 
     // This test code is to help me get started and make sure the basic libraries work as required
 
+    //TODO find a class library to parse the email content
+
     @Test
     public void canSendEmail(){
 
@@ -32,8 +34,10 @@ public class CanSendEmailTest {
         emailer.sendMail(email);
     }
 
+
+
     @Test
-    public void canWorkWithAPI(){
+    public void canWorkWithRestAPI(){
 
         // https://bitbucket.org/naushniki/qamail
 
@@ -98,7 +102,131 @@ public class CanSendEmailTest {
         mailbox = qaMailApi.showMailBox(qaMailSession.getSessionKey(), emailToUse);
         Assert.assertEquals(0, mailbox.size());
 
-        //TODO create session wrapper around the API, so this test is written in terms of the session, rather than the API
-        //TODO find a class library to parse the email content
     }
+
+
+
+    @Test
+    public void canWorkWithSessionDomainAPI(){
+
+        QaMailApiSession qaMailSession = QaMailApiSession.start();
+
+        // list mailboxes
+
+        List<String> mailboxList = qaMailSession.listMailBoxes();
+        int initialSize = mailboxList.size();
+        System.out.println(initialSize);
+
+
+        // create a new mailbox for the session
+        String emailToUse = qaMailSession.createMailbox();
+
+        // Check mailbox has a new email in the list
+        mailboxList = qaMailSession.listMailBoxes();
+        int newSize = mailboxList.size();
+
+        Assert.assertTrue("Size should be bigger ", newSize > initialSize);
+
+        //Show mailbox for an email address
+        QaMailBox mailbox = qaMailSession.showMailBox(emailToUse);
+        String mailboxAddress = mailbox.getEmailAddress();
+
+        Assert.assertEquals("is wrong email address", emailToUse, mailboxAddress);
+        Assert.assertEquals("Should not have any email", 0, mailbox.size());
+
+        // send an email
+        MailSender emailer = MailSender.getInstance();
+        emailer.sendEmailTo(emailToUse, "Bob", "email title", "body of email");
+
+
+        // wait for email to arrive, then get email and check content
+        int startEmailCount = mailbox.size();
+
+        mailbox = qaMailSession.mailBoxPollerFor(emailToUse).
+                setPollWaitTo(500).
+                maxPolls(10).
+                waitUntilMoreThan(mailbox.size());
+
+        Assert.assertTrue("Should have received an email", mailbox.size() > startEmailCount);
+
+        List<QaMailLetterSummary> letters = mailbox.getLetters();
+        Assert.assertEquals("email title",letters.get(0).subject);
+        Assert.assertEquals(emailer.getDefaultFromEmailAddress(), letters.get(0).from);
+
+
+        //get the body of the email with  /show_letter call
+        QaMailLetter letter = qaMailSession.showLetter(emailToUse, letters.get(0).id);
+        Assert.assertTrue(letter.content.contains("body of email"));
+
+        // https://bitbucket.org/naushniki/qamail
+
+        // Empty Emailbox
+        qaMailSession.emptyMailBox(emailToUse);
+
+        //check mailbox is empty
+        mailbox = qaMailSession.showMailBox(emailToUse);
+        Assert.assertEquals(0, mailbox.size());
+    }
+
+
+    @Test
+    public void canWorkWithSessionAndMailboxDomainAPI(){
+
+        QaMailApiSession qaMailSession = QaMailApiSession.start();
+
+        // list mailboxes
+
+        List<String> mailboxList = qaMailSession.listMailBoxes();
+        int initialSize = mailboxList.size();
+        System.out.println(initialSize);
+
+
+        // create a new mailbox for the session
+        String emailToUse = qaMailSession.createMailbox();
+
+        // Check mailbox has a new email in the list
+        mailboxList = qaMailSession.listMailBoxes();
+        int newSize = mailboxList.size();
+
+        Assert.assertTrue("Size should be bigger ", newSize > initialSize);
+
+        //Show mailbox for an email address
+        QaMailBox mailbox = qaMailSession.showMailBox(emailToUse);
+        String mailboxAddress = mailbox.getEmailAddress();
+
+        Assert.assertEquals("is wrong email address", emailToUse, mailboxAddress);
+        Assert.assertEquals("Should not have any email", 0, mailbox.size());
+
+        // send an email
+        MailSender emailer = MailSender.getInstance();
+        emailer.sendEmailTo(emailToUse, "Bob", "email title", "body of email");
+
+
+        // wait for email to arrive, then get email and check content
+        int startEmailCount = mailbox.size();
+
+        mailbox = mailbox.waitUntilMoreThan(mailbox.size());
+
+        Assert.assertTrue("Should have received an email", mailbox.size() > startEmailCount);
+
+        List<QaMailLetterSummary> letters = mailbox.getLetters();
+        Assert.assertEquals("email title",letters.get(0).subject);
+        Assert.assertEquals(emailer.getDefaultFromEmailAddress(), letters.get(0).from);
+
+
+        //get the body of the email with  /show_letter call
+        QaMailLetter letter = qaMailSession.showLetter(emailToUse, letters.get(0).id);
+        Assert.assertTrue(letter.content.contains("body of email"));
+
+        // https://bitbucket.org/naushniki/qamail
+
+        // Empty Emailbox
+        mailbox.empty();
+
+        //check mailbox is empty
+        mailbox = mailbox.refresh();
+
+        Assert.assertEquals(0, mailbox.size());
+    }
+
 }

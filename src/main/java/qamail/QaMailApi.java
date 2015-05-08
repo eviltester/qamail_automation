@@ -50,7 +50,7 @@ public class QaMailApi {
 
         System.out.println("QA MAIL EMAIL ADDRESS: " + emailAddress);
 
-        QaMailApiSession session = new QaMailApiSession(sessionKey, emailAddress);
+        QaMailApiSession session = new QaMailApiSession(this, sessionKey, emailAddress);
 
         return session;
 
@@ -112,7 +112,7 @@ public class QaMailApi {
 
         System.out.println(mailboxXML);
 
-        return new QaMailBox(mailboxXML);
+        return new QaMailBox(this, sessionKey, mailboxXML);
     }
 
     private String addressParam(String email) {

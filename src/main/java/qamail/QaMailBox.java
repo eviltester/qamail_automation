@@ -13,8 +13,12 @@ import java.util.List;
 public class QaMailBox {
 
     private final XmlPath mailbox;
+    private final QaMailApi qaMailApi;
+    private final String sessionKey;
 
-    public QaMailBox(String mailboxXML) {
+    public QaMailBox(QaMailApi qaMailApi, String sessionKey, String mailboxXML) {
+        this.qaMailApi = qaMailApi;
+        this.sessionKey = sessionKey;
         mailbox = new XmlPath(mailboxXML);
     }
 
@@ -50,5 +54,20 @@ public class QaMailBox {
         }
 
         return summaries;
+    }
+
+    public QaMailBox waitUntilMoreThan(int startSize) {
+         return new MailBoxPoller(qaMailApi, sessionKey, getEmailAddress()).
+                setPollWaitTo(500).
+                maxPolls(10).
+                waitUntilMoreThan(startSize);
+    }
+
+    public void empty() {
+        qaMailApi.emptyMailBox(sessionKey, getEmailAddress());
+    }
+
+    public QaMailBox refresh() {
+        return qaMailApi.showMailBox(sessionKey, getEmailAddress());
     }
 }
