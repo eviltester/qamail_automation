@@ -4,6 +4,7 @@ import org.codemonkey.simplejavamail.Email;
 import org.codemonkey.simplejavamail.Mailer;
 
 import javax.mail.Message;
+import java.util.Map;
 
 public class MailSender {
 
@@ -52,8 +53,12 @@ public class MailSender {
     public void sendEmailTo(String toEmail, String toName, String title, String textOfEmail) {
         final Email email = getEmail();
 
-        email.setSubject(title);
         email.addRecipient(toName, toEmail, Message.RecipientType.TO);
+        sendEmailTo(email, title, textOfEmail);
+    }
+
+    private  void sendEmailTo(Email email, String title, String textOfEmail){
+        email.setSubject(title);
         email.setText(textOfEmail);
 
         // make the messages visible in std out
@@ -61,6 +66,32 @@ public class MailSender {
         mailer.sendMail(email);
     }
 
-    // TODO: need to support multiple to, cc, bcc
+    public void sendEmailTo(Map<String, String> toEmails, Map<String, String> ccEmails, Map<String, String> bccEmails, String title, String textOfEmail) {
+
+        final Email email = getEmail();
+
+        if(null != toEmails) {
+            for (String name : toEmails.keySet()) {
+                String address = toEmails.get(name);
+                email.addRecipient(name, address, Message.RecipientType.TO);
+            }
+        }
+
+        if(null != ccEmails) {
+            for (String name : ccEmails.keySet()) {
+                String address = ccEmails.get(name);
+                email.addRecipient(name, address, Message.RecipientType.CC);
+            }
+        }
+
+        if(null != bccEmails) {
+            for (String name : bccEmails.keySet()) {
+                String address = bccEmails.get(name);
+                email.addRecipient(name, address, Message.RecipientType.BCC);
+            }
+        }
+
+        sendEmailTo(email, title, textOfEmail);
+    }
     // e.g. sendEmailTo(Map<String, String>toEmails, Map<String, String>ccEmails, Map<String, String>bccEmails)
 }

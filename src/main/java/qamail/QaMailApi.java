@@ -15,6 +15,10 @@ public class QaMailApi {
     private Response lastResponse;
 
     public QaMailApi(){
+
+        // TODO make it easy to switch from demo to hosted
+        // TODO support reading from local property file as well as environment vars
+        //qamail_host= "qamail.ala.se";       //qamail demo environment http://qamail.ala.se
         qamail_host= System.getenv("QAMAIL_HOST");
         baseEndPoint = "http://" + qamail_host + "/api";
     }
