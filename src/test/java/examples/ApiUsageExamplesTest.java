@@ -1,5 +1,6 @@
-package email;
+package examples;
 
+import email.MailSender;
 import org.codemonkey.simplejavamail.Email;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import qamail.*;
 import javax.mail.Message;
 import java.util.List;
 
-public class CanSendEmailTest {
+public class ApiUsageExamplesTest {
 
     // This test code is to help me get started and make sure the basic libraries work as required
 
