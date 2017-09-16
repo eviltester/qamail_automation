@@ -45,4 +45,18 @@ public class ExploratoryTest {
         Assert.assertEquals(2, mailboxes.size());
     }
 
+    @Test
+    public void canWeCrashTheLetterImportWithEmailName(){
+        // This won't work unless the data listed here is in the environment
+
+        Map<String,String> toEmails = new HashMap<String,String>();
+
+        toEmails.put("bob", "1234--@tpl4.com");
+
+        MailSender emailer = MailSender.getInstance();
+        emailer.sendEmailTo(toEmails, null, null, "dodgy email address testing", "this email doesn't exist and is dodgy");
+
+        // monito ./usr/share/qamail/log/import.log
+    }
+
 }
